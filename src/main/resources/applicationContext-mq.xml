@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation=" 
+           http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd 
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context.xsd 
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd	
+           http://www.springframework.org/schema/mvc 
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<!-- 配置ConnectionFactory -->
+	<!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供 -->
+	<bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
+	</bean>
+	<!-- 连接池配置 -->
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		destroy-method="stop">
+		<property name="connectionFactory" ref="targetConnectionFactory"></property>
+	</bean>
+
+	<!-- Spring JMS Template -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsFactory">
+		</property>
+		<property name="explicitQosEnabled" value="true" />
+		<!-- deliveryMode, priority, timeToLive 的开关，要生效，必须配置为true，默认false -->
+		<property name="deliveryMode" value="1" />
+		<!-- 发送模式 DeliveryMode.NON_PERSISTENT=1:非持久 ; DeliveryMode.PERSISTENT=2:持久 -->
+		<property name="pubSubDomain" value="true" />
+		<!-- pub/sub模型（发布/订阅） -->
+	</bean>
+
+	<!-- Queue队列：仅有一个订阅者会收到消息，消息一旦被处理就不会存在队列中 -->
+	<bean id="destination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg index="0" value="subject" />
+	</bean>
+	<!-- 发送消息的目的地（一个队列） -->
+	<!-- <bean id="destination" class="org.apache.activemq.command.ActiveMQTopic"> -->
+<!-- 	设置消息队列的名字 -->
+	<!-- <constructor-arg index="0" value="subject" /> -->
+	<!-- </bean> -->
+
+	<!-- 启动监听接收消息 -->
+	<bean id="consumerListener" class="com.riches.mq.consumer.ConsumerListener" />
+
+	<bean id="consumerListenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsFactory" />
+		<property name="destination" ref="destination" />
+		<property name="messageListener" ref="consumerListener" />
+		<property name="sessionTransacted" value="true"/>  
+	</bean>
+</beans>
