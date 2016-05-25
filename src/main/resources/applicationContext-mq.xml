@@ -14,7 +14,8 @@
 	<!-- 配置ConnectionFactory -->
 	<!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供 -->
 	<bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="tcp://localhost:61616" />
+<!-- 		<property name="brokerURL" value="tcp://localhost:61616" /> -->
+		<property name="brokerURL" value="failover:(tcp://192.168.212.57:61616,tcp://192.168.212.58:61616,tcp://192.168.212.59:61616)?initialReconnectDelay=1000" />
 	</bean>
 	<!-- 连接池配置 -->
 	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
