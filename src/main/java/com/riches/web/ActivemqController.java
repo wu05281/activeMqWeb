@@ -49,5 +49,4 @@ public class ActivemqController {
         }
         return opt;
     }
-     
 }
