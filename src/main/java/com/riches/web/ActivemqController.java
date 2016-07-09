@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.jikexueyuan.rpc.People;
+import com.jikexueyuan.rpc.SpeakInterface;
 import com.riches.mq.consumer.dto.User;
 import com.riches.mq.provider.QueueSender;
 
@@ -16,13 +18,19 @@ public class ActivemqController {
      
     @Resource QueueSender queueSender;
     
+    @Resource SpeakInterface speakInterface;
+    
     @RequestMapping("/")
 	public String index(HttpServletRequest request) {
+    	People  pe = new People();
+    	pe.setAge(22);
+    	pe.setSex(0);
+    	System.out.println(speakInterface.speak(pe));
     	return "index";
     }
      
     /**
-     * ·¢ËÍÏûÏ¢µ½¶ÓÁÐ
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * @param message
      * @return String
      */

@@ -8,7 +8,7 @@
   <!-- Spring Application Context Listener Start -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:applicationContext.xml,classpath*:applicationContext-mq.xml</param-value>
+        <param-value>classpath*:applicationContext.xml,classpath*:applicationContext-mq.xml,classpath*:dubboConsumerContext.xml</param-value>
     </context-param>
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
