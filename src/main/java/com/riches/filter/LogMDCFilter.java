@@ -1,6 +1,8 @@
 package com.riches.filter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.Filter;
@@ -22,11 +24,15 @@ public class LogMDCFilter implements Filter{
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain filterChain) throws IOException, ServletException {
 		String uuid = UUID.randomUUID().toString();
-		MDC.put("requestUUID", uuid.replaceAll("-", "").toUpperCase());
+		Map<String,String> tags = new HashMap<String, String>();
+		tags.put("requestUUID", uuid.replaceAll("-", "").toUpperCase());
+		MDC.setContextMap(tags);//通过MDC标记Tags
+		//		MDC.put("requestUUID", uuid.replaceAll("-", "").toUpperCase());
 		try{
 			filterChain.doFilter(request, response);
 		} finally{
-			MDC.remove("requestUUID");
+//			MDC.remove("requestUUID");
+			MDC.clear();
 		}
 
 	}
